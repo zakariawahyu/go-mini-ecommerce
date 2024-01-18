@@ -1,0 +1,23 @@
+App:
+  Name:
+  Version:
+  Port: :
+  Environment:
+  Timeout:
+
+Mysql:
+  Host:
+  Port:
+  User:
+  Password:
+  DbName:
+  MaxIdleConnection:
+  MaxOpenConnection:
+
+Redis:
+  Host:
+  Port:
+  Password:
+
+Jwt:
+  SecretKey:
