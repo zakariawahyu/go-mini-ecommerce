@@ -45,6 +45,22 @@ type ProductUsecase interface {
 	GetBySlug(ctx context.Context, slug string) (*ProductWithCategory, error)
 }
 
+type ProductRes struct {
+	ID          string    `json:"id"`
+	Slug        string    `json:"slug"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       int       `json:"price"`
+	Stock       int64     `json:"stock"`
+	IsActive    bool      `json:"is_active"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+func (ProductRes) TableName() string {
+	return "products"
+}
+
 type ProductWithCategory struct {
 	ID          string      `json:"id"`
 	Slug        string      `json:"slug"`

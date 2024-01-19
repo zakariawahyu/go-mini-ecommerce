@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go-mini-ecommerce/config"
 	"go-mini-ecommerce/internal/infrastructure/db"
+	cartRoutes "go-mini-ecommerce/internal/modules/cart/delivery/http/v1"
 	categoryRoutes "go-mini-ecommerce/internal/modules/category/delivery/http/v1"
 	customerRoutes "go-mini-ecommerce/internal/modules/customer/delivery/http/v1"
 	productRoutes "go-mini-ecommerce/internal/modules/product/delivery/http/v1"
@@ -40,6 +41,7 @@ func (s *server) Run() error {
 	customerRoutes.Routes(v1, s.cfg, s.db)
 	categoryRoutes.Routes(v1, s.cfg, s.db)
 	productRoutes.Routes(v1, s.cfg, s.db)
+	cartRoutes.Routes(v1, s.cfg, s.db)
 	if err := s.fiber.Listen(s.cfg.App.Port); err != nil {
 		return err
 	}

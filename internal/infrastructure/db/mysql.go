@@ -52,7 +52,7 @@ func NewMysqlConnection(cfg *config.Config) (*MysqlDB, error) {
 		return nil, err
 	}
 
-	conn.AutoMigrate(&domain.Customer{}, &domain.Category{}, &domain.Product{})
+	conn.AutoMigrate(&domain.Customer{}, &domain.Category{}, &domain.Product{}, &domain.Cart{})
 
 	sqlDB, err := conn.DB()
 	if err != nil {
