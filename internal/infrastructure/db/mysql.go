@@ -14,7 +14,9 @@ import (
 type MysqlDBInterface interface {
 	Create(ctx context.Context, doc any) error
 	Update(ctx context.Context, data any) error
+	Find(ctx context.Context, data any, opts ...FindOption) error
 	FindOne(ctx context.Context, data any, opts ...FindOption) error
+	Count(ctx context.Context, model any, total *int64, opts ...FindOption) error
 }
 
 type MysqlDB struct {
@@ -50,7 +52,7 @@ func NewMysqlConnection(cfg *config.Config) (*MysqlDB, error) {
 		return nil, err
 	}
 
-	conn.AutoMigrate(&domain.Customer{})
+	conn.AutoMigrate(&domain.Customer{}, &domain.Category{}, &domain.Product{})
 
 	sqlDB, err := conn.DB()
 	if err != nil {
@@ -72,9 +74,27 @@ func (d *MysqlDB) Update(ctx context.Context, data any) error {
 	return d.db.WithContext(ctx).Save(data).Error
 }
 
+func (d *MysqlDB) Find(ctx context.Context, data any, opts ...FindOption) error {
+	query := d.applyOptions(opts...)
+	if err := query.WithContext(ctx).Find(data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (d *MysqlDB) FindOne(ctx context.Context, data any, opts ...FindOption) error {
 	query := d.applyOptions(opts...)
 	if err := query.WithContext(ctx).First(data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *MysqlDB) Count(ctx context.Context, model any, total *int64, opts ...FindOption) error {
+	query := d.applyOptions(opts...)
+	if err := query.Model(model).WithContext(ctx).Count(total).Error; err != nil {
 		return err
 	}
 
