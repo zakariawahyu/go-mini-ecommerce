@@ -1,16 +1,16 @@
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
-name: CI-CD Staging
+name: CI-CD Production
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "master" ]
 
 jobs:
 
   build:
-    environment: staging
+    environment: production
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,10 +40,10 @@ jobs:
         with:
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-mini-ecommerce:stag
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-mini-ecommerce:prod
   deployment:
     needs: build
-    environment: staging
+    environment: production
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VPS
@@ -54,11 +54,11 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            cd /root/go-mini-ecommerce
-            git pull origin dev
-            docker-compose -f docker-compose.stg.yml down 
-            docker-compose -f docker-compose.stg.yml pull
-            docker-compose -f docker-compose.stg.yml up -d
+            cd /root/prod/go-mini-ecommerce
+            git pull origin master
+            docker-compose -f docker-compose.prod.yml down 
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d
             docker image prune -f
 
 
