@@ -6,10 +6,11 @@ import (
 )
 
 type Config struct {
-	App   App
-	Mysql Mysql
-	Redis Redis
-	Jwt   Jwt
+	App      App
+	Mysql    Mysql
+	Redis    Redis
+	Jwt      Jwt
+	Midtrans Midtrans
 }
 
 type App struct {
@@ -38,6 +39,10 @@ type Redis struct {
 
 type Jwt struct {
 	SecretKey string
+}
+
+type Midtrans struct {
+	ServerKey string
 }
 
 func LoadConfig() (*Config, error) {

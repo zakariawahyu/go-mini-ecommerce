@@ -12,7 +12,7 @@ import (
 type Category struct {
 	ID        string    `gorm:"unique;not null;index;primary_key" json:"id"`
 	Slug      string    `gorm:"unique;not null;index:idx_category_slug" json:"slug"`
-	Name      string    `gorm:"not null" json:"name"`
+	Name      string    `gorm:"not null;index:idx_category_name" json:"name"`
 	IsActive  bool      `gorm:"not null" json:"is_active"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

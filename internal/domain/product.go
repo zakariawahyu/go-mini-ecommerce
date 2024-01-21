@@ -13,7 +13,7 @@ type Product struct {
 	ID          string    `gorm:"unique;not null;index;primary_key" json:"id"`
 	CategoryID  string    `gorm:"not null" json:"category_id"`
 	Slug        string    `gorm:"unique;not null;index:idx_product_slug" json:"slug"`
-	Name        string    `gorm:"not null" json:"name"`
+	Name        string    `gorm:"not null;index:idx_category_name" json:"name"`
 	Description string    `gorm:"not null" json:"description"`
 	Price       int       `gorm:"not null" json:"price"`
 	Stock       int64     `gorm:"not null" json:"stock"`

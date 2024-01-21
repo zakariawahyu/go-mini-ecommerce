@@ -3,7 +3,7 @@ package req
 import validation "github.com/go-ozzo/ozzo-validation"
 
 type CartCreateReq struct {
-	CustomerID string `json:"user_id"`
+	CustomerID string `json:"customer_id"`
 	ProductID  string `json:"product_id"`
 	Quantity   int    `json:"quantity"`
 }
@@ -17,7 +17,7 @@ func (r CartCreateReq) Validate() error {
 }
 
 type CartUpdateReq struct {
-	CustomerID string `json:"user_id"`
+	CustomerID string `json:"customer_id"`
 	ProductID  string `json:"product_id"`
 	Quantity   int    `json:"quantity"`
 }

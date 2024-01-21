@@ -77,3 +77,18 @@ func (r *cartRepository) GetByID(ctx context.Context, id string) (*domain.Cart, 
 
 	return &cart, nil
 }
+
+func (r *cartRepository) GetPreloadByID(ctx context.Context, id string) (*domain.CartWithProduct, error) {
+	var cart domain.CartWithProduct
+
+	query := []db.Query{
+		db.NewQuery("id = ?", id),
+		db.NewQuery("is_active = ?", true),
+	}
+
+	if err := r.db.FindOne(ctx, &cart, db.WithQuery(query...), db.WithPreload([]string{"Product"})); err != nil {
+		return nil, err
+	}
+
+	return &cart, nil
+}

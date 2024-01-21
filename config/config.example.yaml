@@ -21,3 +21,6 @@ Redis:
 
 Jwt:
   SecretKey:
+
+Midtrans:
+  ServerKey:
