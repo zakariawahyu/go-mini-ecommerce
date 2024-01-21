@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  app-staging:
+  mini-ecommerce-prod:
     image: zakariawahyu/go-mini-ecommerce:prod
     container_name: mini-ecommerce-prod
     environment:

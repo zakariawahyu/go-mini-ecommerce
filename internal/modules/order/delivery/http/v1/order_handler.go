@@ -10,15 +10,28 @@ import (
 )
 
 type orderHandler struct {
-	orderUsecase domain.OrderUsecase
+	orderUsecase   domain.OrderUsecase
+	paymentUsecase domain.PaymentUsecase
 }
 
-func NewOrderHandler(orderUsecase domain.OrderUsecase) *orderHandler {
+func NewOrderHandler(orderUsecase domain.OrderUsecase, paymentUsecase domain.PaymentUsecase) *orderHandler {
 	return &orderHandler{
-		orderUsecase: orderUsecase,
+		orderUsecase:   orderUsecase,
+		paymentUsecase: paymentUsecase,
 	}
 }
 
+// Create Create order
+// @Tags Order
+// @Summary Create new order
+// @Description Create new order
+// @Accept json
+// @Produce json
+// @Param body body req.OrderCreateReq true "Create order"
+// @Success 200 {object} res.OrderWithPaymentRes
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /order [post]
 func (h *orderHandler) Create(c *fiber.Ctx) error {
 	var request req.OrderCreateReq
 	var ctx = c.Context()
@@ -34,11 +47,24 @@ func (h *orderHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	var result res.OrderRes
+	payment, err := h.paymentUsecase.Create(ctx, order.ID)
+	var result res.OrderWithPaymentRes
 	helper.Copy(&result, &order)
+
+	result.Payment = payment
 	return c.JSON(response.NewSuccessResponse(fiber.StatusOK, result))
 }
 
+// GetByID Get order by id
+// @Tags Order
+// @Summary Get order by id
+// @Description Get single order by id
+// @Produce json
+// @Param id path string true "order id"
+// @Success 200 {object} domain.OrderRes
+// @Failure 404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /category/{slug} [get]
 func (h *orderHandler) GetByID(c *fiber.Ctx) error {
 	var ctx = c.Context()
 	var id = c.Params("id")

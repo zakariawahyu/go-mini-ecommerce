@@ -14,3 +14,14 @@ type OrderRes struct {
 	CreatedAt  time.Time          `json:"created_at"`
 	UpdatedAt  time.Time          `json:"updated_at"`
 }
+
+type OrderWithPaymentRes struct {
+	ID         string             `json:"id"`
+	CustomerID string             `json:"customer_id"`
+	Status     domain.OrderStatus `gorm:"not null" json:"status"`
+	TotalPrice float64            `json:"total_price"`
+	Payment    *domain.Payment    `json:"payment"`
+	OrderItems []domain.OrderItem `json:"order_items"`
+	CreatedAt  time.Time          `json:"created_at"`
+	UpdatedAt  time.Time          `json:"updated_at"`
+}

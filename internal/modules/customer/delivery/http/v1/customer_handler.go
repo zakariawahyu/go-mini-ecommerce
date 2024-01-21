@@ -19,6 +19,17 @@ func NewCustomerHandler(customerUsecase domain.CustomerUsecase) *customerHandler
 	}
 }
 
+// Login Auth Login
+// @Tags Auth
+// @Summary Login customer
+// @Description Login customer
+// @Accept json
+// @Produce json
+// @Param body body req.LoginReq true "Login customer"
+// @Success 200 {object} domain.Customer
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /login [post]
 func (h *customerHandler) Login(c *fiber.Ctx) error {
 	var request req.LoginReq
 	var ctx = c.Context()
@@ -41,6 +52,17 @@ func (h *customerHandler) Login(c *fiber.Ctx) error {
 	}))
 }
 
+// Register Auth Register
+// @Tags Auth
+// @Summary Register customer
+// @Description Register customer
+// @Accept json
+// @Produce json
+// @Param body body req.RegisterReq true "Register customer"
+// @Success 200 {object} domain.Customer
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /register [post]
 func (h *customerHandler) Register(c *fiber.Ctx) error {
 	var request req.RegisterReq
 	var ctx = c.Context()
