@@ -16,6 +16,7 @@ var (
 	ErrLoginNotFound    = errors.New("Account not found")
 	ErrRegisterConflict = errors.New("Account already exist")
 	ErrPassword         = errors.New("Wrong password")
+	ErrUnauthorized     = errors.New("Unauthorized")
 )
 
 var ErrorHandler = func(ctx *fiber.Ctx, err error) error {
@@ -51,6 +52,8 @@ func getStatusCode(err error) int {
 		return fiber.StatusConflict
 	case ErrPassword:
 		return fiber.StatusBadRequest
+	case ErrUnauthorized:
+		return fiber.StatusUnauthorized
 	default:
 		return fiber.StatusInternalServerError
 	}

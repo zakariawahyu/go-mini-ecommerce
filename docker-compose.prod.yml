@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  app-staging:
+    image: zakariawahyu/go-mini-ecommerce:prod
+    container_name: mini-ecommerce-prod
+    environment:
+      - PORT=4545
+    networks:
+      - traefik-proxy
+    restart: always
+    tty: true
+    working_dir: /app
+    volumes:
+      - ./:/app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mini-ecommerce-prod.rule=Host(`ecommerce-prod.zakariawahyu.com`)"
+      - "traefik.http.routers.mini-ecommerce-prod.entrypoints=web"
+      - "traefik.http.services.mini-ecommerce-prod.loadbalancer.server.port=4545"
+
+networks:
+  traefik-proxy:
+    external: true

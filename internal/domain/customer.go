@@ -40,3 +40,14 @@ type CustomerUsecase interface {
 	Login(ctx context.Context, req *req.LoginReq) (*Customer, string, error)
 	Register(ctx context.Context, req *req.RegisterReq) (*Customer, error)
 }
+
+type CustomerRes struct {
+	ID       string `json:"id"`
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+}
+
+func (CustomerRes) TableName() string {
+	return "customers"
+}

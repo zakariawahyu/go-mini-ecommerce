@@ -42,7 +42,7 @@ func (h *customerHandler) Login(c *fiber.Ctx) error {
 }
 
 func (h *customerHandler) Register(c *fiber.Ctx) error {
-	request := req.RegisterReq{}
+	var request req.RegisterReq
 	var ctx = c.Context()
 
 	if err := c.BodyParser(&request); err != nil {
