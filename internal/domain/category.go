@@ -33,6 +33,13 @@ type CategoryRepository interface {
 	GetBySlug(ctx context.Context, slug string) (*Category, error)
 }
 
+//go:generate mockery --name=CategoryRedisRepo --output=../mocks
+type CategoryRedisRepo interface {
+	Set(ctx context.Context, key string, value interface{}, exp time.Duration) error
+	Get(ctx context.Context, key string) (string, error)
+	Delete(ctx context.Context, key string) error
+}
+
 //go:generate mockery --name=CategoryUsecase --output=../mocks
 type CategoryUsecase interface {
 	ListCategories(ctx context.Context, req *req.ListCategoryReq) ([]*Category, *paging.Pagination, error)

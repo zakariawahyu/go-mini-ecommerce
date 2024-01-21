@@ -6,22 +6,28 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 	"go-mini-ecommerce/config"
 	"go-mini-ecommerce/internal/domain"
+	"go-mini-ecommerce/utils/helper"
+	"strings"
 	"time"
 )
 
 type paymentUsecase struct {
-	orderRepo domain.OrderRepository
-	cfg       *config.Config
+	paymentRepo domain.PaymentRepository
+	orderRepo   domain.OrderRepository
+	productRepo domain.ProductRepository
+	cfg         *config.Config
 }
 
-func NewPaymentUsecase(orderRepo domain.OrderRepository, cfg *config.Config) *paymentUsecase {
+func NewPaymentUsecase(paymentRepo domain.PaymentRepository, orderRepo domain.OrderRepository, productRepo domain.ProductRepository, cfg *config.Config) *paymentUsecase {
 	return &paymentUsecase{
-		orderRepo: orderRepo,
-		cfg:       cfg,
+		paymentRepo: paymentRepo,
+		orderRepo:   orderRepo,
+		productRepo: productRepo,
+		cfg:         cfg,
 	}
 }
 
-func (u *paymentUsecase) Create(ctx context.Context, orderID string) (string, error) {
+func (u *paymentUsecase) Create(ctx context.Context, orderID string) (*domain.Payment, error) {
 	c, cancel := context.WithTimeout(ctx, u.cfg.App.Timeout*time.Second)
 	defer cancel()
 
@@ -32,7 +38,7 @@ func (u *paymentUsecase) Create(ctx context.Context, orderID string) (string, er
 
 	order, err := u.orderRepo.GetByID(c, orderID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	var enabledPaymentTypes []snap.SnapPaymentType
@@ -40,12 +46,31 @@ func (u *paymentUsecase) Create(ctx context.Context, orderID string) (string, er
 
 	itemDetail := make([]midtrans.ItemDetails, 0)
 	for _, orderItem := range order.OrderItems {
+		productName := orderItem.Product.Name
+		categoryName := orderItem.Product.Category.Name
+		if len(productName) > 50 {
+			productName = strings.TrimSpace(orderItem.Product.Name[0:50])
+		}
+
+		if len(categoryName) > 50 {
+			categoryName = strings.TrimSpace(orderItem.Product.Category.Name[0:50])
+		}
 		itemDetail = append(itemDetail, midtrans.ItemDetails{
-			ID:    orderItem.Product.ID,
-			Name:  orderItem.Product.ID,
-			Price: int64(orderItem.Product.Price),
-			Qty:   int32(orderItem.Quantity),
+			ID: orderItem.Product.ID,
+
+			Name:     productName,
+			Category: categoryName,
+			Price:    int64(orderItem.Product.Price),
+			Qty:      int32(orderItem.Quantity),
 		})
+
+		var product domain.Product
+		helper.Copy(&product, &orderItem.Product)
+		product.Stock = product.Stock - int64(orderItem.Quantity)
+
+		if err := u.productRepo.Update(c, &product); err != nil {
+			return nil, err
+		}
 	}
 
 	snapRequest := snap.Request{
@@ -61,10 +86,19 @@ func (u *paymentUsecase) Create(ctx context.Context, orderID string) (string, er
 		EnabledPayments: enabledPaymentTypes,
 	}
 
-	snapResponse, err := snap.CreateTransactionUrl(&snapRequest)
-	if err != nil {
-		return "", err
+	snapResponse, errSnap := snap.CreateTransaction(&snapRequest)
+	if errSnap != nil {
+		return nil, errSnap.GetRawError()
 	}
 
-	return snapResponse, nil
+	var payment domain.Payment
+	payment.OrderID = orderID
+	payment.PaymentToken = snapResponse.Token
+	payment.PaymentURL = snapResponse.RedirectURL
+
+	if err = u.paymentRepo.Create(c, &payment); err != nil {
+		return nil, err
+	}
+
+	return &payment, nil
 }

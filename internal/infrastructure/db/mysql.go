@@ -61,6 +61,7 @@ func NewMysqlConnection(cfg *config.Config) (*MysqlDB, error) {
 		&domain.Cart{},
 		&domain.Order{},
 		&domain.OrderItem{},
+		&domain.Payment{},
 	); err != nil {
 		return nil, err
 	}

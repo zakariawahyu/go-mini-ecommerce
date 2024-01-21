@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  api-mini-ecommerce:
+    container_name: api-mini-ecommerce
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4545:4545"
+    environment:
+      - PORT=4545
+    restart: always
+    tty: true
+    working_dir: /app
+    volumes:
+      - ./:/app
+    networks:
+      - api_networks
+
+networks:
+  api_networks:
+    driver: bridge
